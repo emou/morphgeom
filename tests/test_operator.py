@@ -1,18 +1,16 @@
 import unittest
 
-from morphlib.operator import ImageOperator
-
 class OperatorObjectTest(unittest.TestCase):
-
-    def test_base_not_implemented(self):
-        op = ImageOperator()
-        self.assertRaises(NotImplementedError, op, None, None)
 
     def test_erosion(self):
         """ TBD """
+        from morphlib.operator import Erosion
+        e = Erosion('Structured element?')
 
     def test_dilation(self):
         """ TBD """
+        from morphlib.operator import Dilation
+        d = Dilation('Structured element?')
 
     def test_opening(self):
         """ TBD """

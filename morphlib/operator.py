@@ -2,25 +2,22 @@
 A module containing image operators.
 """
 
-class ImageOperator(object):
-    """
-    A binary Image operator
-    """
-
-    def __call__(self, imageA, imageB):
-        raise NotImplementedError('Subclasses must provide implmentation.')
-
-
-class Erosion(ImageOperator):
+class Erosion(object):
     """
     The erosion operator.
     """
-    def __call__(self, imageA, imageB):
+    def __init__(self, structuralElement):
+        self.structuralElement = structuralElement
+
+    def __call__(self, image):
         raise NotImplementedError()
 
-class Dilation(ImageOperator):
+class Dilation(object):
     """
     The dilation operator.
     """
-    def __call__(self, imageA, imageB):
+    def __init__(self, structuralElement):
+        self.structuralElement = structuralElement
+
+    def __call__(self, image):
         raise NotImplementedError()
