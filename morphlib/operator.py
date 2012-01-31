@@ -9,10 +9,10 @@ class MorphologicalOperator(object):
         res = []
         for i in xrange(image.height):
             res.append(
-                [self.compute_pixel(i,j, image) for j in xrange(image.width)])
+                [self.compute_pixel((i,j), image) for j in xrange(image.width)])
         return image.__class__(data=res, width=image.width, height=image.height)
 
-    def compute_pixel(self, i, j, original):
+    def compute_pixel(self, px, original):
         raise NotImplementedError()
 
 
@@ -23,7 +23,8 @@ class Erosion(MorphologicalOperator):
     def __init__(self, structuralElement):
         self.structuralElement = structuralElement
 
-    def compute_pixel(self, i, j, original):
+    def compute_pixel(self, px, original):
+        i, j = px
         return original[i][j]
 
 
@@ -34,9 +35,10 @@ class Dilation(MorphologicalOperator):
     def __init__(self, structuralElement):
         self.structuralElement = structuralElement
 
-    def compute_pixel(self, i, j, original):
-        return original[i][j]
-
+    def compute_pixel(self, px, original):
+        i, j = px
+        neighbourhood = self.structuralElement.get_neighbourhood(original, px)
+        return max(original[p][q] for p,q in neighbourhood)
 
 class StructuralElement(object):
     """
@@ -73,3 +75,19 @@ class StructuralElement(object):
         A factory for predefined structural elements.
         """
         return cls(cls.PREDEFINED[key])
+
+    def get(self, i, j):
+        return self.matrix[i][j]
+
+    def get_neighbourhood(self, image, pixel):
+        """
+        Return the neighbourhood of pixels for a pixel in an image defined by
+        the structural element
+        """
+        res = []
+        for i, row in enumerate(self.matrix):
+            for j, value in enumerate(row):
+                if value and ((i, j) < image.size):
+                    # In bounds and covered by structural element.
+                    res.append((i, j))
+        return res

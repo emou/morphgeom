@@ -73,8 +73,8 @@ class OperatorObjectTest(unittest.TestCase):
 
     def test_dilation(self):
         """ TBD """
-        from morphlib.operator import Dilation
-        dilate = Dilation('Structural element?')
+        from morphlib.operator import Dilation, StructuralElement
+        dilate = Dilation(StructuralElement.predefined('octagon'))
         original = ImageMock()
         result = dilate(original)
         self.assertEquals(result.size, original.size)
