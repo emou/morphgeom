@@ -1,3 +1,4 @@
+import os
 import unittest
 from os.path import abspath, dirname, exists, join
 
@@ -52,7 +53,23 @@ class ImageObjectTest(unittest.TestCase):
         self.assertRaises(TypeError, Image)
 
     def test_save(self):
-        self.assertRaises(NotImplementedError, self.i.save, 'foo')
+        test_out = '%s.out' % self.TEST_IMAGE['path']
+        try:
+            change_pixel = (1, 2, 3)
+            self.i[0][0] = change_pixel
+            self.i.save(test_out)
+            self.assertTrue(exists(test_out))
+
+            # Load it back
+            i = Image.load(filepath=test_out)
+            self.assertTrue(self.i.width, self.TEST_IMAGE['size'][0])
+            self.assertTrue(self.i.height, self.TEST_IMAGE['size'][1])
+            self.assertEquals(i[0][0], change_pixel)
+        finally:
+            try:
+                os.unlink(test_out)
+            except EnvironmentError:
+                pass
 
     def test_copy(self):
         self.assertRaises(NotImplementedError, self.i.copy)

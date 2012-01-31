@@ -13,11 +13,9 @@ class Image(object):
         """
         Loads image into memory and returns the Image object representing it.
         """
-        # PIL is used for image import/export only.
+        # PIL used for image import/export only.
         import PIL.Image
-        pil_image=PIL.Image.open(filepath)
-        if pil_image.getbands() != ('R', 'G', 'B'):
-            raise NotImplementedError('Non-RGB images are not implemented yet!')
+        pil_image=PIL.Image.open(filepath).convert("RGB")
         width, height = pil_image.size
         # Get the pixel list
         pixel_list = list(pil_image.getdata())
@@ -34,7 +32,9 @@ class Image(object):
         """
         Saves an image to disk.
         """
-        raise NotImplementedError()
+        # PIL used for image import/export only.
+        import PIL.Image
+        PIL.Image.frombuffer(self._data)
 
     def copy(self):
         """
