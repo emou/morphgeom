@@ -85,9 +85,12 @@ class StructuralElement(object):
         the structural element
         """
         res = []
+        pi, pj = pixel
         for i, row in enumerate(self.matrix):
             for j, value in enumerate(row):
-                if value and ((i, j) < image.size):
+                ci, cj = self.center
+                ni, nj = pi + (ci - i), pj + (cj - j)
+                if value and ni < image.height and nj < image.width:
                     # In bounds and covered by structural element.
-                    res.append((i, j))
+                    res.append((ni, nj))
         return res
