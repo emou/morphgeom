@@ -59,6 +59,13 @@ class OperatorObjectTest(unittest.TestCase):
         StructuralElement([[0, 0],[0, 1]])
         StructuralElement([[1, 1],[1, 1]])
 
+        # Now a more realistic example
+        b = StructuralElement([[0, 0, 1],
+                               [0, 1, 1],
+                               [1, 0, 0],
+                              ])
+        self.assertEqual(b.center, (1,1))
+
     def test_erosion(self):
         """ TBD """
         from morphlib.operator import Erosion, StructuralElement
@@ -67,9 +74,9 @@ class OperatorObjectTest(unittest.TestCase):
     def test_dilation(self):
         """ TBD """
         from morphlib.operator import Dilation
-        d = Dilation('Structural element?')
+        dilate = Dilation('Structural element?')
         original = ImageMock()
-        result = d(original)
+        result = dilate(original)
         self.assertEquals(result.size, original.size)
 
     def test_opening(self):

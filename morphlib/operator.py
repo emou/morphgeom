@@ -45,25 +45,27 @@ class StructuralElement(object):
     """
 
     PREDEFINED = {
-        'octagon': [[0, 1, 1, 0],
-                    [1, 1, 1, 1],
-                    [1, 1, 1, 1],
-                    [0, 1, 1, 0],
+        'octagon': [[0, 1, 0],
+                    [1, 1, 1],
+                    [0, 1, 0],
                    ],
 
-        'diagonal': [[0, 0, 0, 1],
-                     [0, 0, 1, 0],
-                     [0, 1, 0, 0],
-                     [1, 0, 0, 0],
+        'diagonal': [[0, 0, 1],
+                     [0, 1, 0],
+                     [1, 0, 0],
                     ],
     }
 
-    def __init__(self, matrix_list):
+    def __init__(self, matrix_list, center=None):
         if not all(x in [0, 1] for row in matrix_list for x in row):
             raise TypeError("Structured element should be initialized with a matrix containing only zeros and ones")
         elif not all(len(row) == len(matrix_list[0]) for row in matrix_list):
             raise TypeError("Malformed structured element matrix: %r" % matrix_list)
         self.matrix = list(matrix_list)
+        if center is None:
+            self.center = (len(self.matrix) / 2, len(self.matrix[0]) / 2)
+        else:
+            self.center = center
 
     @classmethod
     def predefined(cls, key):
