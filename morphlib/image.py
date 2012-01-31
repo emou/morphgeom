@@ -37,6 +37,7 @@ class Image(object):
     """
     PIL_FORMAT='RGB'
     ROW_CLASS=ImageRow
+    mode='rgb'
 
     def __init__(self, width, height, data):
         self._width = width
@@ -153,3 +154,4 @@ class Image(object):
 class GrayscaleImage(Image):
     PIL_FORMAT='1'
     ROW_CLASS=GrayscaleRow
+    mode='greyscale'

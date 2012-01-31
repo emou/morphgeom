@@ -4,7 +4,7 @@ class ImageMock(object):
     """
     A mock Image object for testing purposes.
     """
-    pass
+    mode='greyscale'
 
 class OperatorObjectTest(unittest.TestCase):
 

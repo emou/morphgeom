@@ -10,7 +10,8 @@ class Erosion(object):
         self.structuralElement = structuralElement
 
     def __call__(self, image):
-        raise NotImplementedError()
+        if not image.mode == 'greyscale':
+            raise TypeError('Erosion only works on greyscale images')
 
 class Dilation(object):
     """
@@ -20,7 +21,8 @@ class Dilation(object):
         self.structuralElement = structuralElement
 
     def __call__(self, image):
-        raise NotImplementedError()
+        if not image.mode == 'greyscale':
+            raise TypeError('Erosion only works on greyscale images')
 
 class StructuralElement(object):
     """
