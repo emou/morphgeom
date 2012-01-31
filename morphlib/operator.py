@@ -28,6 +28,20 @@ class StructuredElement(object):
     Basically this must be a matrix with 1/0 values only.
     """
 
+    PREDEFINED = {
+        'octagon': [[0, 1, 1, 0],
+                    [1, 1, 1, 1],
+                    [1, 1, 1, 1],
+                    [0, 1, 1, 0],
+                   ],
+
+        'diagonal': [[0, 0, 0, 1],
+                     [0, 0, 1, 0],
+                     [0, 1, 0, 0],
+                     [1, 0, 0, 0],
+                    ],
+    }
+
     def __init__(self, matrix_list):
         if not all(x in [0, 1] for row in matrix_list for x in row):
             raise TypeError("Structured element should be initialized with a matrix containing only zeros and ones")
@@ -35,3 +49,6 @@ class StructuredElement(object):
             raise TypeError("Malformed structured element matrix: %r" % matrix_list)
         self.matrix = list(matrix_list)
 
+    @classmethod
+    def predefined(cls, key):
+        return cls(cls.PREDEFINED[key])

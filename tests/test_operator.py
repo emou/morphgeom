@@ -1,7 +1,12 @@
 import unittest
 
-class OperatorObjectTest(unittest.TestCase):
+class ImageMock(object):
+    """
+    A mock Image object for testing purposes.
+    """
+    pass
 
+class OperatorObjectTest(unittest.TestCase):
 
     def test_structured_element(self):
         from morphlib.operator import StructuredElement
@@ -34,8 +39,9 @@ class OperatorObjectTest(unittest.TestCase):
 
     def test_erosion(self):
         """ TBD """
-        from morphlib.operator import Erosion
-        e = Erosion('Structured element?')
+        from morphlib.operator import Erosion, StructuredElement
+        e = Erosion(StructuredElement.predefined('octagon'))
+        e(ImageMock())
 
     def test_dilation(self):
         """ TBD """
