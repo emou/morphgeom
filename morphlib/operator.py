@@ -33,3 +33,5 @@ class StructuredElement(object):
             raise TypeError("Structured element should be initialized with a matrix containing only zeros and ones")
         elif not all(len(row) == len(matrix_list[0]) for row in matrix_list):
             raise TypeError("Malformed structured element matrix: %r" % matrix_list)
+        self.matrix = list(matrix_list)
+
