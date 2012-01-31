@@ -14,11 +14,9 @@ class ImageObjectTest(unittest.TestCase):
     def setUp(self):
         assert exists(self.TEST_IMAGE['path']), \
                 'Test picture missing: %s' % self.TEST_IMAGE['path']
-        self.i = Image(filepath=self.TEST_IMAGE['path'])
+        self.i = Image.load(filepath=self.TEST_IMAGE['path'])
 
     def test_Image_object(self):
-        self.assertEquals(self.i.filepath, self.TEST_IMAGE['path'])
-        self.i.load()
         self.assertTrue(self.i.size[0]==self.i.width)
         self.assertTrue(self.i.size[1]==self.i.height)
         self.assertEqual(self.i.width, self.TEST_IMAGE['size'][0])
@@ -29,3 +27,9 @@ class ImageObjectTest(unittest.TestCase):
 
     def test_required_filepath(self):
         self.assertRaises(TypeError, Image)
+
+    def test_save(self):
+        self.assertRaises(NotImplementedError, self.i.save, 'foo')
+
+    def test_copy(self):
+        self.assertRaises(NotImplementedError, self.i.copy)

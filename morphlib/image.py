@@ -3,36 +3,40 @@ class Image(object):
     An image abstraction
     """
 
-    def __init__(self, filepath):
-        """
-        Initialize a new image from the given filepath.
-        """
-        self.filepath = filepath
+    def __init__(self, width, height, data):
+        self._width = width
+        self._height = height
+        self._data = data
 
-    def load(self):
+    @classmethod
+    def load(cls, filepath):
         """
-        Loads image into memory and returns a list representing each pixel.
-
-        Return value: None.
+        Loads image into memory and returns the Image object representing it.
         """
         # PIL is used for image import/export only.
         import PIL.Image
-        pil_image=PIL.Image.open(self.filepath)
-        self._width, self._height = pil_image.size
+        pil_image=PIL.Image.open(filepath)
+        width, height = pil_image.size
         # Get the pixel list
         pixel_list = list(pil_image.getdata())
         data = []
         # The pixel list is flat, so we need to make it into a matrix for more
         # convinient processing.
-        for i in xrange(0, len(pixel_list), self._width):
-            data.append(tuple(pixel_list[i:i+self._width]))
-        assert len(data) == self._height, \
-                'Image data height mismatch: %s instead of %s.' % (len(data), self._height)
-        self.data=data
+        for i in xrange(0, len(pixel_list), width):
+            data.append(pixel_list[i:i+width])
+        assert len(data) == height, \
+                'Image data height mismatch: %s instead of %s.' % (len(data), height)
+        return cls(width=width, height=height, data=data)
 
     def save(self, filepath):
         """
         Saves an image to disk.
+        """
+        raise NotImplementedError()
+
+    def copy(self):
+        """
+        Return a copy of the image.
         """
         raise NotImplementedError()
 
@@ -65,12 +69,17 @@ class Image(object):
             self.load()
             return self._width
 
-    def __getitem__(self, x):
+    def __getitem__(self, i):
         """
-        Return row at position x as a tuple (rows are immutable)
+        Return a row of pixels
         """
         try:
-            return self.data[x]
+            return self._data[i]
         except AttributeError:
             self.load()
-            return self.data[x]
+            return self._data[i]
+    
+    def __setitem__(self, i):
+        """
+        Set a row of pixels
+        """
