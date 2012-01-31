@@ -1,0 +1,3 @@
+Should:
+1) Import an image.
+2) Implement morphological opening / closing operators.
