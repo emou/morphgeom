@@ -22,12 +22,28 @@ class ImageObjectTest(unittest.TestCase):
         self.assertEqual(self.i.width, self.TEST_IMAGE['size'][0])
         self.assertEqual(self.i.height, self.TEST_IMAGE['size'][1])
 
-    def test_Image_object_returns_immutable_rows(self):
-        # XXX: Test and implment type-check ensuring only tuples can be assigned
+    def test_Image_object_allows_assignment(self):
         try:
             self.i[0][0] = (0, 0, 0)
         except TypeError:
-            raise AssertionError('Image does not allow pixel assignment')
+            raise AssertionError('Image does not allow RBG pixel assignment')
+
+    def test_Image_object_doesnt_allow_invalid_assignemt(self):
+        try:
+            self.i[0][0] = ('foo', 0, 0)
+        except TypeError:
+            pass
+        else:
+            raise AssertionError(
+                'Image does not catch junk pixel assignment (value)')
+
+        try:
+            self.i[0][0] = (0, 0, 0, 2)
+        except TypeError:
+            pass
+        else:
+            raise AssertionError(
+                'Image does not catch junk pixel assignment (length)')
 
     def test_Image_object_pixel_values(self):
         self.assertEqual(self.i[0][0], self.TEST_IMAGE['topleftpixel'])

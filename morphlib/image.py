@@ -108,7 +108,8 @@ class RGBImageRow(object):
     
     def __setitem__(self, i, x):
         if not isinstance(x, tuple) or \
-           len(x) != self.VALUES_PER_PIXEL:
+           len(x) != self.VALUES_PER_PIXEL or \
+           not all(isinstance(v, int) for v in x):
             raise TypeError('Invalid RGB row value: %r' % x)
         self.lst[i] = x
 
