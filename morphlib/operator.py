@@ -22,9 +22,9 @@ class Dilation(object):
     def __call__(self, image):
         raise NotImplementedError()
 
-class StructuredElement(object):
+class StructuralElement(object):
     """
-    Represents a structured element.
+    Represents a structural element.
     Basically this must be a matrix with 1/0 values only.
     """
 
