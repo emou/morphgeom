@@ -1,6 +1,6 @@
 class Image(object):
     """
-    An image abstraction
+    An RGB image abstraction
     """
 
     def __init__(self, width, height, data):
@@ -16,6 +16,8 @@ class Image(object):
         # PIL is used for image import/export only.
         import PIL.Image
         pil_image=PIL.Image.open(filepath)
+        if pil_image.getbands() != ('R', 'G', 'B'):
+            raise NotImplementedError('Non-RGB images are not implemented yet!')
         width, height = pil_image.size
         # Get the pixel list
         pixel_list = list(pil_image.getdata())
