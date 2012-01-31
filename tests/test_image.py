@@ -22,6 +22,13 @@ class ImageObjectTest(unittest.TestCase):
         self.assertEqual(self.i.width, self.TEST_IMAGE['size'][0])
         self.assertEqual(self.i.height, self.TEST_IMAGE['size'][1])
 
+    def test_Image_object_returns_immutable_rows(self):
+        # XXX: Test and implment type-check ensuring only tuples can be assigned
+        try:
+            self.i[0][0] = (0, 0, 0)
+        except TypeError:
+            raise AssertionError('Image does not allow pixel assignment')
+
     def test_Image_object_pixel_values(self):
         self.assertEqual(self.i[0][0], self.TEST_IMAGE['topleftpixel'])
 
@@ -33,3 +40,12 @@ class ImageObjectTest(unittest.TestCase):
 
     def test_copy(self):
         self.assertRaises(NotImplementedError, self.i.copy)
+
+    def test_setrow(self):
+        # Set a row to a new row with same width
+        self.i[0] = [0,] * self.TEST_IMAGE['size'][0]
+        # Set a row to a new row with wrong width
+        self.assertRaises(ValueError,
+                          self.i.__setitem__,
+                          0,
+                          [0,] * (self.TEST_IMAGE['size'][0] + 1))
