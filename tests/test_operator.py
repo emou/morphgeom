@@ -69,12 +69,12 @@ class OperatorObjectTest(unittest.TestCase):
     def test_erosion(self):
         """ TBD """
         from morphlib.operator import Erosion, StructuralElement
-        e = Erosion(StructuralElement.predefined('octagon'))
+        e = Erosion(StructuralElement.predefined('rhombus'))
 
     def test_dilation(self):
         """ TBD """
         from morphlib.operator import Dilation, StructuralElement
-        dilate = Dilation(StructuralElement.predefined('octagon'))
+        dilate = Dilation(StructuralElement.predefined('rhombus'))
         original = ImageMock()
         # Set a high value to the second pixel to the right
         original[0][1] = 255

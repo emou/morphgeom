@@ -36,7 +36,7 @@ class ImageObjectTest(unittest.TestCase):
                                  '%s%s%s' % (basename(name), '_grayscale', ext))
         try:
             self.i.save(test_intermediate)
-            dilate = Dilation(StructuralElement.predefined('octagon'))
+            dilate = Dilation(StructuralElement.predefined('rhombus'))
             i = dilate(self.i)
             i.save(test_out)
         finally:
