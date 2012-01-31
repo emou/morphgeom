@@ -6,6 +6,28 @@ class ImageMock(object):
     """
     mode='greyscale'
 
+    DATA = [
+        [255] * 20,
+    ] * 20
+
+    def __init__(self, width=None, height=None, data=None):
+        if data is None:
+            self.data = self.DATA
+            assert width is None
+            assert height is None
+            self.width = len(self.DATA[0])
+            self.height = len(self.DATA)
+        else:
+            assert width is not None
+            assert height is not None
+            self.data = data
+            self.width = height
+            self.height = height
+        self.size=(self.width, self.height)
+
+    def __getitem__(self, i):
+        return self.data[i]
+
 class OperatorObjectTest(unittest.TestCase):
 
     def test_structural_element(self):
@@ -41,12 +63,14 @@ class OperatorObjectTest(unittest.TestCase):
         """ TBD """
         from morphlib.operator import Erosion, StructuralElement
         e = Erosion(StructuralElement.predefined('octagon'))
-        e(ImageMock())
 
     def test_dilation(self):
         """ TBD """
         from morphlib.operator import Dilation
         d = Dilation('Structural element?')
+        original = ImageMock()
+        result = d(original)
+        self.assertEquals(result.size, original.size)
 
     def test_opening(self):
         """ TBD """

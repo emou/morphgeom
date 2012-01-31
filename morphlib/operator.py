@@ -2,27 +2,41 @@
 A module containing image operators.
 """
 
-class Erosion(object):
+class MorphologicalOperator(object):
+    def __call__(self, image):
+        if not image.mode == 'greyscale':
+            raise TypeError('%s only works on greyscale images' % self.__class__)
+        res = []
+        for i in xrange(image.height):
+            res.append(
+                [self.compute_pixel(i,j, image) for j in xrange(image.width)])
+        return image.__class__(data=res, width=image.width, height=image.height)
+
+    def compute_pixel(self, i, j, original):
+        raise NotImplementedError()
+
+
+class Erosion(MorphologicalOperator):
     """
     The erosion operator.
     """
     def __init__(self, structuralElement):
         self.structuralElement = structuralElement
 
-    def __call__(self, image):
-        if not image.mode == 'greyscale':
-            raise TypeError('Erosion only works on greyscale images')
+    def compute_pixel(self, i, j, original):
+        return original[i][j]
 
-class Dilation(object):
+
+class Dilation(MorphologicalOperator):
     """
     The dilation operator.
     """
     def __init__(self, structuralElement):
         self.structuralElement = structuralElement
 
-    def __call__(self, image):
-        if not image.mode == 'greyscale':
-            raise TypeError('Erosion only works on greyscale images')
+    def compute_pixel(self, i, j, original):
+        return original[i][j]
+
 
 class StructuralElement(object):
     """
@@ -53,4 +67,7 @@ class StructuralElement(object):
 
     @classmethod
     def predefined(cls, key):
+        """
+        A factory for predefined structural elements.
+        """
         return cls(cls.PREDEFINED[key])
