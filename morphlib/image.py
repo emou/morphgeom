@@ -40,8 +40,8 @@ class Image(object):
     mode='rgb'
 
     def __init__(self, width, height, data):
-        self._width = width
-        self._height = height
+        self.width = width
+        self.height = height
         self._data = data
 
     @classmethod
@@ -70,16 +70,16 @@ class Image(object):
         """
         # PIL used for image import/export only.
         import PIL.Image
-        i = PIL.Image.new(self.PIL_FORMAT, (self._width, self._height))
+        i = PIL.Image.new(self.PIL_FORMAT, (self.width, self.height))
 
-        assert len(self._data) == self._height, 'Wrong height'
-        assert len(self._data[0]) == self._width, 'Wrong width'
+        assert len(self._data) == self.height, 'Wrong height'
+        assert len(self._data[0]) == self.width, 'Wrong width'
 
         data = [px for r in self._data for px in r]
 
         assert self._data[0][0] == data[0]
         assert self._data[0][1] == data[1]
-        assert self._data[1][0] == data[self._width]
+        assert self._data[1][0] == data[self.width]
 
         i.putdata(data, scale=1.0, offset=0.0)
         i.save(filepath)
@@ -96,28 +96,6 @@ class Image(object):
         Return the size of the image as a tuple (width, height).
         """
         return (self.width, self.height)
-
-    @property
-    def width(self):
-        """
-        Return the width of the image in pixels.
-        """
-        try:
-            return self._width
-        except AttributeError:
-            self.load()
-            return self._width
-
-    @property
-    def height(self):
-        """
-        Return the height of the image in pixels.
-        """
-        try:
-            return self._width
-        except AttributeError:
-            self.load()
-            return self._width
 
     def __getitem__(self, i):
         """
@@ -152,6 +130,6 @@ class Image(object):
 
 
 class GrayscaleImage(Image):
-    PIL_FORMAT='1'
+    PIL_FORMAT='L'
     ROW_CLASS=GrayscaleRow
-    mode='greyscale'
+    mode='grayscale'

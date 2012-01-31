@@ -8,7 +8,7 @@ class ImageObjectTest(unittest.TestCase):
     TEST_IMAGE={
         'path': join(dirname(abspath(__file__)), 'images', 'pict.png'),
         # Validated using an external program (gimp)
-        'size': (110, 110),
+        'size': (110, 153),
         'topleftpixel': (255, 253, 244),
     }
 

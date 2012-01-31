@@ -4,7 +4,7 @@ class ImageMock(object):
     """
     A mock Image object for testing purposes.
     """
-    mode='greyscale'
+    mode='grayscale'
 
     DATA = [
         [250] * 20,
@@ -21,7 +21,7 @@ class ImageMock(object):
             assert width is not None
             assert height is not None
             self.data = data
-            self.width = height
+            self.width = width
             self.height = height
         self.size=(self.width, self.height)
 

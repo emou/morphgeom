@@ -4,12 +4,14 @@ A module containing image operators.
 
 class MorphologicalOperator(object):
     def __call__(self, image):
-        if not image.mode == 'greyscale':
-            raise TypeError('%s only works on greyscale images' % self.__class__)
+        if not image.mode == 'grayscale':
+            raise TypeError('%s only works on grayscale images' % self.__class__)
         res = []
         for i in xrange(image.height):
             res.append(
                 [self.compute_pixel((i,j), image) for j in xrange(image.width)])
+        assert len(res)==image.height, 'Wrong height'
+        assert len(res[0])==image.width, 'Wrong width'
         return image.__class__(data=res, width=image.width, height=image.height)
 
     def compute_pixel(self, px, original):
