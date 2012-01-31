@@ -15,7 +15,7 @@ class Image(object):
         """
         # PIL used for image import/export only.
         import PIL.Image
-        pil_image=PIL.Image.open(filepath).convert("RGB")
+        pil_image=PIL.Image.open(filepath).convert('RGB')
         width, height = pil_image.size
         # Get the pixel list
         pixel_list = list(pil_image.getdata())
@@ -34,7 +34,21 @@ class Image(object):
         """
         # PIL used for image import/export only.
         import PIL.Image
-        PIL.Image.frombuffer(self._data)
+        i = PIL.Image.new('RGB', (self._width, self._height))
+
+        assert len(self._data) == self._height, 'Wrong height'
+        assert len(self._data[0]) == self._width, 'Wrong width'
+        assert len(self._data[0][0]) == 3, 'Wrong pixel'
+
+        data = [px for r in self._data for px in r]
+
+        assert all(isinstance(px, tuple) for px in data)
+        assert self._data[0][0] == data[0]
+        assert self._data[0][1] == data[1]
+        assert self._data[1][0] == data[self._width]
+
+        i.putdata(data, scale=1.0, offset=0.0)
+        i.save(filepath)
 
     def copy(self):
         """
@@ -117,3 +131,6 @@ class RGBImageRow(object):
 
     def __getitem__(self, i):
         return self.lst[i]
+    
+    def __len__(self):
+        return len(self.lst)
