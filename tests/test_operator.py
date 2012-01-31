@@ -7,7 +7,7 @@ class ImageMock(object):
     mode='greyscale'
 
     DATA = [
-        [255] * 20,
+        [250] * 20,
     ] * 20
 
     def __init__(self, width=None, height=None, data=None):
@@ -76,8 +76,13 @@ class OperatorObjectTest(unittest.TestCase):
         from morphlib.operator import Dilation, StructuralElement
         dilate = Dilation(StructuralElement.predefined('octagon'))
         original = ImageMock()
+        # Set a high value to the second pixel to the right
+        original[0][1] = 255
         result = dilate(original)
         self.assertEquals(result.size, original.size)
+        # Make sure that the pixel left to the highest-valued pixel was switched to the bumped pixel's value
+        # (since dilation takes the maximum)
+        self.assertEquals(result[0][0], original[0][1])
 
     def test_opening(self):
         """ TBD """
