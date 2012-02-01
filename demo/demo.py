@@ -19,8 +19,10 @@ class Main(object):
         self.images = []
         self.root = Tkinter.Tk()
         self.menu = Tkinter.Menu(self.root)
-        self.menu.add_command(label="Load Image...", command=self.menu_load_image)
-        self.menu.add_command(label="Load Mask Image...", command=self.menu_load_mask)
+        self.menu.add_command(label="Load Image...",
+                              command=self.menu_load_image)
+        self.menu.add_command(label="Load Mask Image...",
+                              command=self.menu_load_mask)
         self.root.config(menu=self.menu)
 
     def get_filename(self):
@@ -86,6 +88,7 @@ class Main(object):
         if self.image:
             self.images.append(('Original Image', self.original(self.image)))
             self.images.append(('Dilated Image', self.dilated(self.image)))
+            #self.images.append(('Inverted Image', self.image_to_tk(self.image.invert())))
         if self.mask_image:
             self.images.append(('Mask', self.mask(self.mask_image)))
         if self.image and self.mask_image:
