@@ -42,6 +42,7 @@ class Dilation(MorphologicalOperator):
         neighbourhood = self.structuralElement.get_neighbourhood(original, px)
         return max(original[p][q] for p,q in neighbourhood)
 
+
 class GeodesicDilation(Dilation):
     """
     Geodesic dilation operator.
@@ -63,15 +64,18 @@ class GeodesicDilation(Dilation):
         return min(self.mask[i][j],
                    super(GeodesicDilation, self).compute_pixel(px, original))
 
+
 class AreaOpening(MorphologicalOperator):
     """
     TBD
     """
 
+
 class CloseHoles(MorphologicalOperator):
     """
     TBD
     """
+
 
 class StructuralElement(object):
     """

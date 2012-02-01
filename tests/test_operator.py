@@ -89,8 +89,13 @@ class OperatorObjectTest(unittest.TestCase):
         from morphlib.operator import GeodesicDilation, StructuralElement
         original = ImageMock()
         mask = ImageMock()
+        mask[0][0] = 1
+        mask[0][2] = 255
+        original[0][1] = 255
         dilate = GeodesicDilation(StructuralElement.predefined('rhombus'), mask=mask)
-        dilate(original)
+        res = dilate(original)
+        self.assertEquals(res[0][0], 1)
+        self.assertEquals(res[0][2], original[0][1])
 
     def test_opening(self):
         """ TBD """
