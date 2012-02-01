@@ -83,6 +83,7 @@ class ReconstructionByDilation(GeodesicDilation):
                 raise ValueError(
                     "Reconstruction took more than %d iterations. Giving up." % (
                         self.ITERATIONS_LIMIT))
+            print prev, current
             if prev == current:
                 return current
             prev = current

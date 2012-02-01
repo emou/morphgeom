@@ -110,6 +110,7 @@ class Image(object):
             for j in xrange(self.width):
                 if self[i][j] != other[i][j]:
                     return False
+        return True
 
     def __getitem__(self, i):
         """

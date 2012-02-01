@@ -24,12 +24,12 @@ class Main(object):
         ])
 
     def load_image(self):
-        self.image_filename = self.get_filename()
-        if not self.image_filename:
+        image_filename = self.get_filename()
+        if not image_filename:
             raise SystemExit(1)
-        self.root.title(self.image_filename)
+        self.root.title(image_filename)
         try:
-            return GrayscaleImage.load(self.image_filename)
+            return image_filename, GrayscaleImage.load(image_filename)
         except IOError:
             sys.stderr.write('Error reading image. Exiting.\n')
             raise SystemExit(2)
@@ -49,25 +49,32 @@ class Main(object):
         """
         return ImageTk.PhotoImage(self.image_to_pil_image(i))
 
-    def original(self):
-        return self.image_to_tk(self.image)
+    def original(self, i):
+        return self.image_to_tk(i)
+
+    def mask(self, i):
+        return self.image_to_tk(i)
 
     def dilated(self, i):
         dilate = Dilation(StructuralElement.predefined('rhombus'))
-        return self.image_to_tk(dilate(self.image))
+        return self.image_to_tk(dilate(i))
 
-    def reconstruct_by_dilation(self, i):
+    def reconstruct_by_dilation(self, i, mask):
         dilate = ReconstructionByDilation(StructuralElement.predefined('rhombus'),
-                                          mask=None)
-        return self.image_to_tk(dilate(self.image))
+                                          mask=mask)
+        return self.image_to_tk(dilate(i))
 
     def __call__(self, args):
         self.initialize()
-        self.image = self.load_image()
+        self.image_filename, self.image = self.load_image()
+        self.mask_name, self.mask_image = self.load_image()
 
         self.images = (
-            ('Original Image', self.original()),
+            ('Original Image', self.original(self.image)),
             ('Dilated Image', self.dilated(self.image)),
+            ('Mask', self.mask(self.mask_image)),
+            ('Reconstruction by dilation', self.reconstruct_by_dilation(
+                self.image, self.mask_image)),
         )
 
         i = 0
