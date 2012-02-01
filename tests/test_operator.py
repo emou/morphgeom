@@ -67,12 +67,12 @@ class OperatorObjectTest(unittest.TestCase):
         self.assertEqual(b.center, (1,1))
 
     def test_erosion(self):
-        """ TBD """
+        """ Test the erosion operator """
         from morphlib.operator import Erosion, StructuralElement
         e = Erosion(StructuralElement.predefined('rhombus'))
 
     def test_dilation(self):
-        """ TBD """
+        """ Test the dilation operator """
         from morphlib.operator import Dilation, StructuralElement
         dilate = Dilation(StructuralElement.predefined('rhombus'))
         original = ImageMock()
@@ -83,6 +83,14 @@ class OperatorObjectTest(unittest.TestCase):
         # Make sure that the pixel left to the highest-valued pixel was switched to the bumped pixel's value
         # (since dilation takes the maximum)
         self.assertEquals(result[0][0], original[0][1])
+
+    def test_geodesic_dilation(self):
+        """ Test geodesic dilation operator """
+        from morphlib.operator import GeodesicDilation, StructuralElement
+        original = ImageMock()
+        mask = ImageMock()
+        dilate = GeodesicDilation(StructuralElement.predefined('rhombus'), mask=mask)
+        dilate(original)
 
     def test_opening(self):
         """ TBD """

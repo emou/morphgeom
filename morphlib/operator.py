@@ -1,10 +1,10 @@
 """
-A module containing image operators.
+A module containing morphological operators.
 """
 
 class MorphologicalOperator(object):
     def __call__(self, image):
-        if not image.mode == 'grayscale':
+        if image.mode != 'grayscale':
             raise TypeError('%s only works on grayscale images' % self.__class__)
         res = []
         for i in xrange(image.height):
@@ -41,6 +41,37 @@ class Dilation(MorphologicalOperator):
         i, j = px
         neighbourhood = self.structuralElement.get_neighbourhood(original, px)
         return max(original[p][q] for p,q in neighbourhood)
+
+class GeodesicDilation(Dilation):
+    """
+    Geodesic dilation operator.
+    """
+    def __init__(self, structuralElement, mask):
+        super(GeodesicDilation, self).__init__(structuralElement)
+        if mask.mode != 'grayscale':
+            raise TypeError('%s only works with grayscale mask' % self.__class__)
+        self.mask = mask
+
+    def __call__(self, original):
+        if original.width > self.mask.width or original.height > self.mask.height:
+            raise ValueError('Mask too small %r for image %r' % (
+                self.mask.size, original.size))
+        return super(GeodesicDilation, self).__call__(original)
+
+    def compute_pixel(self, px, original):
+        i, j = px
+        return min(self.mask[i][j],
+                   super(GeodesicDilation, self).compute_pixel(px, original))
+
+class AreaOpening(MorphologicalOperator):
+    """
+    TBD
+    """
+
+class CloseHoles(MorphologicalOperator):
+    """
+    TBD
+    """
 
 class StructuralElement(object):
     """
