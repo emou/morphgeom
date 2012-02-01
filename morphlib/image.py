@@ -176,11 +176,8 @@ class GrayscaleImage(Image):
         assert 0 < pixels < self.width, "Invalid border size"
         assert 0 < pixels < self.height, "Invalid border size"
 
-        compute_border_row = lambda i, r: list(r) if i<pixels or i>self.height-pixels \
-                else [px if j<pixels or j>self.width-pixels else 0 for j, px in enumerate(r)]
-
-        return GrayscaleImage(
-            width=self.width,
-            height=self.height,
-            data=[compute_border_row(i, r) for i, r in enumerate(self._data)]
-        )
+        res = self.copy()
+        for i in xrange(pixels, res.height - pixels):
+            for j in xrange(pixels, res.width - pixels):
+                res[i][j] = 0
+        return res
