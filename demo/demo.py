@@ -4,7 +4,8 @@ import sys
 import Tkinter
 from tkFileDialog import askopenfilename
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)))
+sys.path.append(os.path.abspath(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)))
 from morphlib.image import GrayscaleImage
 
 def main(args):
