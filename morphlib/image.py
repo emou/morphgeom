@@ -75,7 +75,7 @@ class Image(object):
         assert len(self._data) == self.height, 'Wrong height'
         assert len(self._data[0]) == self.width, 'Wrong width'
 
-        data = [px for r in self._data for px in r]
+        data = self.getdata()
 
         assert self._data[0][0] == data[0]
         assert self._data[0][1] == data[1]
@@ -88,7 +88,17 @@ class Image(object):
         """
         Return a copy of the image.
         """
-        raise NotImplementedError()
+        return self.__class__(
+            width=self.width,
+            height=self.height,
+            data=map(list, self._data),
+        )
+
+    def invert(self):
+        raise NotImplementedError("Not implemented for RGB yet!")
+
+    def border(self, pixels=1):
+        raise NotImplementedError("Not implemented for RGB yet!")
 
     @property
     def size(self):
@@ -96,6 +106,22 @@ class Image(object):
         Return the size of the image as a tuple (width, height).
         """
         return (self.width, self.height)
+
+    def getdata(self):
+        """
+        Return a copy of the image data.
+        """
+        return [px for r in self._data for px in r]
+
+    def __eq__(self, other):
+        if self.size != other.size:
+            return False
+        for i in xrange(self.height):
+            for j in xrange(self.width):
+                if self[i][j] != other[i][j]:
+                    print i, j, self[i][j], other[i][j]
+                    return False
+        return True
 
     def __getitem__(self, i):
         """
@@ -130,6 +156,28 @@ class Image(object):
 
 
 class GrayscaleImage(Image):
+    # XXX: Should have an abstract class and not have Grayscale inherit Image
+    # (which is actually RGBImage)
     PIL_FORMAT='L'
     ROW_CLASS=GrayscaleRow
     mode='grayscale'
+
+    def invert(self):
+        return GrayscaleImage(
+            width=self.width,
+            height=self.height,
+            data=[map(lambda px: 255-px, r) for r in self._data]
+        )
+
+    def border(self, pixels=1):
+        """
+        Return the border of the image, which is a new image with BLACK inside.
+        """
+        assert 0 < pixels < self.width, "Invalid border size"
+        assert 0 < pixels < self.height, "Invalid border size"
+
+        res = self.copy()
+        for i in xrange(pixels, res.height - pixels):
+            for j in xrange(pixels, res.width - pixels):
+                res[i][j] = 0
+        return res

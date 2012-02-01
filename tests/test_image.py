@@ -2,7 +2,7 @@ import os
 import unittest
 from os.path import abspath, dirname, exists, join
 
-from morphlib.image import Image
+from morphlib.image import Image, GrayscaleImage
 
 class ImageObjectTest(unittest.TestCase):
     TEST_IMAGE={
@@ -46,6 +46,14 @@ class ImageObjectTest(unittest.TestCase):
             raise AssertionError(
                 'Image does not catch junk pixel assignment (length)')
 
+    def test_Image_equality(self):
+        p = self.TEST_IMAGE['path']
+        i1, i2 = Image.load(filepath=p), Image.load(filepath=p)
+        self.assertTrue(i1 == i2)
+        self.assertEquals(i1, i2)
+        i1[0][0] = (0, 0, 0)
+        self.assertTrue(i1 != i2)
+
     def test_Image_object_pixel_values(self):
         self.assertEqual(self.i[0][0], self.TEST_IMAGE['topleftpixel'])
 
@@ -74,7 +82,11 @@ class ImageObjectTest(unittest.TestCase):
                 pass
 
     def test_copy(self):
-        self.assertRaises(NotImplementedError, self.i.copy)
+        c = self.i.copy()
+        self.assertEquals(c[0][0], self.i[0][0])
+        self.assertNotEquals(self.i[0][1], (0, 1, 3))
+        c[0][1]=(0, 1, 3)
+        self.assertNotEquals(self.i[0][1], (0, 1, 3))
 
     def test_setrow(self):
         # Set a row to a new row with same width
@@ -84,3 +96,21 @@ class ImageObjectTest(unittest.TestCase):
                           self.i.__setitem__,
                           0,
                           [0,] * (self.TEST_IMAGE['size'][0] + 1))
+
+    def test_GrayscaleImage_invert(self):
+        i = GrayscaleImage.load(filepath=self.TEST_IMAGE['path'])
+        inv = i.invert()
+        self.assertEquals(inv.size, i.size)
+        self.assertEquals(inv[0][0] + i[0][0], 255)
+
+    def test_GrayscaleImage_border(self):
+        i = GrayscaleImage.load(filepath=self.TEST_IMAGE['path'])
+        b = i.border(pixels=2)
+        self.assertEquals(b[0][0], i[0][0])
+        self.assertEquals(b[0][1], i[0][1])
+        self.assertEquals(b[0][2], i[0][2])
+        self.assertEquals(b[1][0], i[1][0])
+        self.assertEquals(b[1][1], i[1][1])
+        self.assertEquals(b[3][3], 0)
+        self.assertNotEquals(b[2][2], i[2][2])
+        self.assertEquals(b[-1][-1], i[-1][-1])

@@ -12,7 +12,8 @@ class ImageMock(object):
 
     def __init__(self, width=None, height=None, data=None):
         if data is None:
-            self.data = self.DATA
+            import copy
+            self.data = copy.deepcopy(self.DATA)
             assert width is None
             assert height is None
             self.width = len(self.DATA[0])
@@ -25,8 +26,14 @@ class ImageMock(object):
             self.height = height
         self.size=(self.width, self.height)
 
+    def copy(self):
+        return ImageMock(width=self.width, height=self.height, data=self.data)
+
     def __getitem__(self, i):
         return self.data[i]
+
+    def __eq__(self, i):
+        return all(x==y for (x,y) in zip(self.data, i.data))
 
 class OperatorObjectTest(unittest.TestCase):
 
@@ -67,7 +74,7 @@ class OperatorObjectTest(unittest.TestCase):
         self.assertEqual(b.center, (1,1))
 
     def test_erosion(self):
-        """ TBD """
+        """ Test the erosion operator """
         from morphlib.operator import Erosion, StructuralElement
 
         erode = Erosion(StructuralElement.predefined('octagon'))
@@ -85,7 +92,7 @@ class OperatorObjectTest(unittest.TestCase):
         
 
     def test_dilation(self):
-        """ TBD """
+        """ Test the dilation operator """
         from morphlib.operator import Dilation, StructuralElement
         dilate = Dilation(StructuralElement.predefined('rhombus'))
         original = ImageMock()
@@ -96,6 +103,35 @@ class OperatorObjectTest(unittest.TestCase):
         # Make sure that the pixel left to the highest-valued pixel was switched to the bumped pixel's value
         # (since dilation takes the maximum)
         self.assertEquals(result[0][0], original[0][1])
+
+    def test_geodesic_dilation(self):
+        """ Test geodesic dilation operator """
+        from morphlib.operator import GeodesicDilation, StructuralElement
+        original = ImageMock()
+        mask = ImageMock()
+        mask[0][0] = 1
+        mask[0][2] = 255
+        original[0][1] = 255
+        dilate = GeodesicDilation(StructuralElement.predefined('rhombus'), mask=mask)
+        res = dilate(original)
+        self.assertEquals(res[0][0], 1)
+        self.assertEquals(res[0][2], original[0][1])
+
+    def test_reconstruction_by_dilation(self):
+        """ Test reconstruction by dilation operator """
+        from morphlib.operator import ReconstructionByDilation, StructuralElement
+        original = ImageMock()
+        mask = ImageMock()
+        # Create a noop mask
+        for i in xrange(mask.height):
+            for j in xrange(mask.width):
+                mask[i][j]=255
+        original[0][0] = 1
+        reconstruct = ReconstructionByDilation(
+            StructuralElement.predefined('rhombus'), mask=mask)
+        res = reconstruct(original)
+        # A very basic assert that we've "reconstructed" the first pixel
+        self.assertEquals(res[0][0], 250)
 
     def test_opening(self):
         """ TBD """
