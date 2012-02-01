@@ -91,7 +91,6 @@ class ReconstructionByDilation(GeodesicDilation):
                     result[i][j] = GeodesicDilation.compute_pixel(self, (i,j), result)
                     if old != result[i][j]:
                         changed = True
-        return 'joo'
 
 
 class OpeningByReconstruction(MorphologicalOperator):
