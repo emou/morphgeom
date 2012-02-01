@@ -76,7 +76,20 @@ class OperatorObjectTest(unittest.TestCase):
     def test_erosion(self):
         """ Test the erosion operator """
         from morphlib.operator import Erosion, StructuralElement
-        e = Erosion(StructuralElement.predefined('rhombus'))
+
+        erode = Erosion(StructuralElement.predefined('octagon'))
+        original = ImageMock()
+        # Set the highest value to the pixel in the top left corner
+        original[0][0] = 255
+        # Set some low value to the second pixel on the second row
+        original[1][1] = 1
+        result = erode(original)
+        self.assertEquals(result.size, original.size)
+        # Make sure that the value of the second pixel on the second row is switched to 0
+        # (erosion takes the minimum)
+        self.assertEquals(result[0][0], original[0][1])
+        self.assertEquals(result[1][1], original[0][1])
+        
 
     def test_dilation(self):
         """ Test the dilation operator """
