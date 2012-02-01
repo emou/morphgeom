@@ -97,6 +97,14 @@ class Image(object):
         """
         return (self.width, self.height)
 
+    def __eq__(self, other):
+        if self.size != other.size:
+            return False
+        for i in xrange(self.height):
+            for j in xrange(self.width):
+                if self[i][j] != other[i][j]:
+                    return False
+
     def __getitem__(self, i):
         """
         Return a row of pixels

@@ -12,7 +12,8 @@ class ImageMock(object):
 
     def __init__(self, width=None, height=None, data=None):
         if data is None:
-            self.data = self.DATA
+            import copy
+            self.data = copy.deepcopy(self.DATA)
             assert width is None
             assert height is None
             self.width = len(self.DATA[0])
@@ -27,6 +28,9 @@ class ImageMock(object):
 
     def __getitem__(self, i):
         return self.data[i]
+
+    def __eq__(self, i):
+        return all(x==y for (x,y) in zip(self.data, i.data))
 
 class OperatorObjectTest(unittest.TestCase):
 
@@ -96,6 +100,22 @@ class OperatorObjectTest(unittest.TestCase):
         res = dilate(original)
         self.assertEquals(res[0][0], 1)
         self.assertEquals(res[0][2], original[0][1])
+
+    def test_reconstruction_by_dilation(self):
+        """ Test reconstruction by dilation operator """
+        from morphlib.operator import ReconstructionByDilation, StructuralElement
+        original = ImageMock()
+        mask = ImageMock()
+        # Create a noop mask
+        for i in xrange(mask.height):
+            for j in xrange(mask.width):
+                mask[i][j]=255
+        original[0][0] = 1
+        reconstruct = ReconstructionByDilation(
+            StructuralElement.predefined('rhombus'), mask=mask)
+        res = reconstruct(original)
+        # A very basic assert that we've "reconstructed" the first pixel
+        self.assertEquals(res[0][0], 250)
 
     def test_opening(self):
         """ TBD """
