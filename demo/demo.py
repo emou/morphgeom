@@ -3,6 +3,7 @@ import os
 import sys
 import ImageTk
 import Tkinter
+import tkMessageBox
 from tkFileDialog import askopenfilename
 
 import PIL
@@ -44,8 +45,11 @@ class Main(object):
         try:
             return image_filename, GrayscaleImage.load(image_filename)
         except IOError:
-            sys.stderr.write('Error reading image. Exiting.\n')
-            raise SystemExit(2)
+            tkMessageBox.showerror(
+                "Error while opening image",
+                "Cannot open %s. Looks like it's not a valid image." % image_filename,
+            )
+            return None, None
 
     def image_to_pil_image(self, i):
         """
