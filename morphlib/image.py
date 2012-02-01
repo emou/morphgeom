@@ -75,7 +75,7 @@ class Image(object):
         assert len(self._data) == self.height, 'Wrong height'
         assert len(self._data[0]) == self.width, 'Wrong width'
 
-        data = [px for r in self._data for px in r]
+        data = self.getdata()
 
         assert self._data[0][0] == data[0]
         assert self._data[0][1] == data[1]
@@ -96,6 +96,12 @@ class Image(object):
         Return the size of the image as a tuple (width, height).
         """
         return (self.width, self.height)
+
+    def getdata(self):
+        """
+        Return a copy of the image data.
+        """
+        return [px for r in self._data for px in r]
 
     def __eq__(self, other):
         if self.size != other.size:

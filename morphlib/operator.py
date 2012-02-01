@@ -49,25 +49,29 @@ class GeodesicDilation(Dilation):
     """
     def __init__(self, structuralElement, mask):
         super(GeodesicDilation, self).__init__(structuralElement)
-        if mask.mode != 'grayscale':
+        if mask is not None and mask.mode != 'grayscale':
             raise TypeError('%s only works with grayscale mask' % self.__class__)
         self.mask = mask
 
     def __call__(self, original):
-        if original.width > self.mask.width or original.height > self.mask.height:
+        if self.mask is not None \
+           and (original.width > self.mask.width \
+                or original.height > self.mask.height):
             raise ValueError('Mask too small %r for image %r' % (
                 self.mask.size, original.size))
         return super(GeodesicDilation, self).__call__(original)
 
     def compute_pixel(self, px, original):
         i, j = px
-        return min(self.mask[i][j],
-                   super(GeodesicDilation, self).compute_pixel(px, original))
+        gd = super(GeodesicDilation, self).compute_pixel(px, original)
+        if self.mask is None:
+            return gd
+        return min(self.mask[i][j], gd)
 
 
 class ReconstructionByDilation(GeodesicDilation):
     # Mainly for debugging.
-    ITERATIONS_LIMIT = 20
+    ITERATIONS_LIMIT = 30
 
     def __call__(self, original):
         prev = original
