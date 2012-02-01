@@ -46,6 +46,14 @@ class ImageObjectTest(unittest.TestCase):
             raise AssertionError(
                 'Image does not catch junk pixel assignment (length)')
 
+    def test_Image_equality(self):
+        p = self.TEST_IMAGE['path']
+        i1, i2 = Image.load(filepath=p), Image.load(filepath=p)
+        self.assertTrue(i1 == i2)
+        self.assertEquals(i1, i2)
+        i1[0][0] = (0, 0, 0)
+        self.assertTrue(i1 != i2)
+
     def test_Image_object_pixel_values(self):
         self.assertEqual(self.i[0][0], self.TEST_IMAGE['topleftpixel'])
 
