@@ -26,7 +26,7 @@ class ImageRow(object):
 
 class GrayscaleRow(ImageRow):
     def check_item(self, x):
-        if not isinstance(x, int) or not 0<=x<=255:
+        if not isinstance(x, int) or not 0 <= x <=255:
             raise TypeError('Invalid grayscale pixel value: %r' % x)
         return x
 
@@ -125,14 +125,10 @@ class Image(object):
 
     def __getitem__(self, i):
         """
-        Return a row of pixels
+        Return a mutable row of pixels
         """
-        try:
-            return self._data[i]
-        except AttributeError:
-            self.load()
-            return self._data[i]
-    
+        return self._data[i]
+ 
     def __setitem__(self, i, row):
         """
         Set a row of pixels
