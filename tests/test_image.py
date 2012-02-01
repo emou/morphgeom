@@ -2,7 +2,7 @@ import os
 import unittest
 from os.path import abspath, dirname, exists, join
 
-from morphlib.image import Image
+from morphlib.image import Image, GrayscaleImage
 
 class ImageObjectTest(unittest.TestCase):
     TEST_IMAGE={
@@ -92,3 +92,9 @@ class ImageObjectTest(unittest.TestCase):
                           self.i.__setitem__,
                           0,
                           [0,] * (self.TEST_IMAGE['size'][0] + 1))
+
+    def test_GrayscaleImage_invert(self):
+        i = GrayscaleImage.load(filepath=self.TEST_IMAGE['path'])
+        inv = i.invert()
+        self.assertEquals(inv.size, i.size)
+        self.assertEquals(inv[0][0] + i[0][0], 255)

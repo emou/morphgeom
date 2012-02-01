@@ -88,16 +88,28 @@ class ReconstructionByDilation(GeodesicDilation):
             prev = current
 
 
+class OpeningByReconstruction(MorphologicalOperator):
+    """
+    TBD
+    """
+    pass
+
+
 class AreaOpening(MorphologicalOperator):
     """
     TBD
     """
+    pass
 
 
 class CloseHoles(MorphologicalOperator):
     """
-    TBD
+    Closes-holes operator.
+    As defined in M.A. Luengo-Oroz et al. / Image and Vision Computing 28 (2009) 278-284.
     """
+    def __call__(self, original):
+        original.invert()
+        pass
 
 
 class StructuralElement(object):

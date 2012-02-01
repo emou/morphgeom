@@ -90,6 +90,9 @@ class Image(object):
         """
         raise NotImplementedError()
 
+    def invert(self):
+        raise NotImplementedError("Not implemented for RGB yet!")
+
     @property
     def size(self):
         """
@@ -148,3 +151,10 @@ class GrayscaleImage(Image):
     PIL_FORMAT='L'
     ROW_CLASS=GrayscaleRow
     mode='grayscale'
+
+    def invert(self):
+        return GrayscaleImage(
+            width=self.width,
+            height=self.height,
+            data=[map(lambda px: 255-px, r) for r in self._data]
+        )
