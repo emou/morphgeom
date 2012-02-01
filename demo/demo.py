@@ -15,7 +15,11 @@ def main(args):
     ])
     if not image_filename:
         return 1
-    i=GrayscaleImage.load(image_filename)
+    try:
+        i=GrayscaleImage.load(image_filename)
+    except IOError:
+        sys.stderr.write('Error reading image. Exiting.\n')
+        return 2
     return 0
 
 if __name__ == '__main__':
