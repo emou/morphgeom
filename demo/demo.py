@@ -14,14 +14,27 @@ from morphlib.operator import Dilation, ReconstructionByDilation, StructuralElem
 
 class Main(object):
     def initialize(self):
-        self.images = {}
+        self.mask_image = self.image = None
+        self.images = []
         self.root = Tkinter.Tk()
+        self.menu = Tkinter.Menu(self.root)
+        self.menu.add_command(label="Load Image...", command=self.menu_load_image)
+        self.menu.add_command(label="Load Mask Image...", command=self.menu_load_mask)
+        self.root.config(menu=self.menu)
 
     def get_filename(self):
         return askopenfilename(filetypes=[
             ("allfiles", "*"),
             ("images", "*.jpg *.jpeg *.png"),
         ])
+
+    def menu_load_image(self):
+        self.image_filename, self.image = self.load_image()
+        self.refresh_images()
+
+    def menu_load_mask(self):
+        self.mask_name, self.mask_image = self.load_image()
+        self.refresh_images()
 
     def load_image(self):
         image_filename = self.get_filename()
@@ -64,19 +77,17 @@ class Main(object):
                                           mask=mask)
         return self.image_to_tk(dilate(i))
 
-    def __call__(self, args):
-        self.initialize()
-        self.image_filename, self.image = self.load_image()
-        self.mask_name, self.mask_image = self.load_image()
-
-        self.images = (
-            ('Original Image', self.original(self.image)),
-            ('Dilated Image', self.dilated(self.image)),
-            ('Mask', self.mask(self.mask_image)),
-            ('Reconstruction by dilation', self.reconstruct_by_dilation(
-                self.image, self.mask_image)),
-        )
-
+    def refresh_images(self):
+        self.images = []
+        if self.image:
+            self.images.append(('Original Image', self.original(self.image)))
+            self.images.append(('Dilated Image', self.dilated(self.image)))
+        if self.mask_image:
+            self.images.append(('Mask', self.mask(self.mask_image)))
+        if self.image and self.mask_image:
+            self.images.append(
+                ('Reconstruction by dilation',
+                 self.reconstruct_by_dilation(self.image, self.mask_image)))
         i = 0
         for txt, img in self.images:
             image_label = Tkinter.Label(self.root, image=img)
@@ -85,6 +96,8 @@ class Main(object):
             text_label.grid(row=i, column=1)
             i+=1
 
+    def __call__(self, args):
+        self.initialize()
         self.root.mainloop()
         return 0
 
