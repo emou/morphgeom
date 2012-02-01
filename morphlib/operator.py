@@ -71,20 +71,19 @@ class GeodesicDilation(Dilation):
 
 class ReconstructionByDilation(GeodesicDilation):
     # Mainly for debugging.
-    ITERATIONS_LIMIT = 20
+    ITERATIONS_LIMIT = 100
 
     def __call__(self, original):
         i = 0
         result = original.copy()
 
         changed = True
-        while changed:
+        while True:
             if not changed:
                 return result
             changed = False
             i += 1
             if i > self.ITERATIONS_LIMIT:
-                print 'Reached %d iterations. Returning' % self.ITERATIONS_LIMIT
                 return result
             for i in xrange(result.height):
                 for j in xrange(result.width):
@@ -92,6 +91,7 @@ class ReconstructionByDilation(GeodesicDilation):
                     result[i][j] = GeodesicDilation.compute_pixel(self, (i,j), result)
                     if old != result[i][j]:
                         changed = True
+        return 'joo'
 
 
 class OpeningByReconstruction(MorphologicalOperator):
