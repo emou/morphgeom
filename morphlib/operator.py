@@ -27,7 +27,8 @@ class Erosion(MorphologicalOperator):
 
     def compute_pixel(self, px, original):
         i, j = px
-        return original[i][j]
+        neighbourhood = self.structuralElement.get_neighbourhood(original, px)
+        return min(original[p][q] for p,q in neighbourhood)
 
 
 class Dilation(MorphologicalOperator):
@@ -49,9 +50,9 @@ class StructuralElement(object):
     """
 
     PREDEFINED = {
-        'octagon': [[0, 1, 0],
+        'octagon': [[1, 1, 1],
                     [1, 1, 1],
-                    [0, 1, 0],
+                    [1, 1, 1],
                    ],
 
         'diagonal': [[0, 0, 1],
