@@ -82,7 +82,11 @@ class ImageObjectTest(unittest.TestCase):
                 pass
 
     def test_copy(self):
-        self.assertRaises(NotImplementedError, self.i.copy)
+        c = self.i.copy()
+        self.assertEquals(c[0][0], self.i[0][0])
+        self.assertNotEquals(self.i[0][1], (0, 1, 3))
+        c[0][1]=(0, 1, 3)
+        self.assertNotEquals(self.i[0][1], (0, 1, 3))
 
     def test_setrow(self):
         # Set a row to a new row with same width
@@ -107,6 +111,6 @@ class ImageObjectTest(unittest.TestCase):
         self.assertEquals(b[0][2], i[0][2])
         self.assertEquals(b[1][0], i[1][0])
         self.assertEquals(b[1][1], i[1][1])
-        self.assertEquals(b[3][3], 255)
+        self.assertEquals(b[3][3], 0)
         self.assertNotEquals(b[2][2], i[2][2])
         self.assertEquals(b[-1][-1], i[-1][-1])

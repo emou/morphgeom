@@ -26,6 +26,9 @@ class ImageMock(object):
             self.height = height
         self.size=(self.width, self.height)
 
+    def copy(self):
+        return ImageMock(width=self.width, height=self.height, data=self.data)
+
     def __getitem__(self, i):
         return self.data[i]
 

@@ -88,7 +88,11 @@ class Image(object):
         """
         Return a copy of the image.
         """
-        raise NotImplementedError()
+        return self.__class__(
+            width=self.width,
+            height=self.height,
+            data=map(list, self._data),
+        )
 
     def invert(self):
         raise NotImplementedError("Not implemented for RGB yet!")
