@@ -11,7 +11,7 @@ import PIL
 sys.path.append(os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)))
 from morphlib.image import GrayscaleImage
-from morphlib.operator import Dilation, ReconstructionByDilation, StructuralElement
+from morphlib.operator import Dilation, ReconstructionByDilation, CloseHoles, StructuralElement
 
 class Main(object):
     def initialize(self):
@@ -83,11 +83,16 @@ class Main(object):
                                           mask=mask)
         return self.image_to_tk(dilate(i))
 
+    def close_holes(self, i):
+        close_holes = CloseHoles()
+        return self.image_to_tk(close_holes(i))
+
     def refresh_images(self):
         self.images = []
         if self.image:
             self.images.append(('Original Image', self.original(self.image)))
             self.images.append(('Dilated Image', self.dilated(self.image)))
+            self.images.append(('Close holes', self.close_holes(self.image)))
             #self.images.append(('Inverted Image', self.image_to_tk(self.image.invert())))
             #self.images.append(('Border of Image', self.image_to_tk(self.image.border(pixels=10))))
         if self.mask_image:

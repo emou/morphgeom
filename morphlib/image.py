@@ -115,6 +115,7 @@ class Image(object):
         for i in xrange(self.height):
             for j in xrange(self.width):
                 if self[i][j] != other[i][j]:
+                    print i, j, self[i][j], other[i][j]
                     return False
         return True
 
@@ -166,13 +167,13 @@ class GrayscaleImage(Image):
 
     def border(self, pixels=1):
         """
-        Return the border of the image, which is a new image with WHITE inside.
+        Return the border of the image, which is a new image with BLACK inside.
         """
         assert 0 < pixels < self.width, "Invalid border size"
         assert 0 < pixels < self.height, "Invalid border size"
 
         compute_border_row = lambda i, r: list(r) if i<pixels or i>self.height-pixels \
-                else [px if j<pixels or j>self.width-pixels else 255 for j, px in enumerate(r)]
+                else [px if j<pixels or j>self.width-pixels else 0 for j, px in enumerate(r)]
 
         return GrayscaleImage(
             width=self.width,

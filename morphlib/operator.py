@@ -71,18 +71,19 @@ class GeodesicDilation(Dilation):
 
 class ReconstructionByDilation(GeodesicDilation):
     # Mainly for debugging.
-    ITERATIONS_LIMIT = 30
+    ITERATIONS_LIMIT = 100
 
     def __call__(self, original):
         prev = original
         i = 0
         while True:
-            current = super(ReconstructionByDilation, self).__call__(prev)
+            current = GeodesicDilation.__call__(self, prev)
             i += 1
             if i > self.ITERATIONS_LIMIT:
-                raise ValueError(
-                    "Reconstruction took more than %d iterations. Giving up." % (
-                        self.ITERATIONS_LIMIT))
+                #raise ValueError(
+                #    "Reconstruction took more than %d iterations. Giving up." % (
+                #        self.ITERATIONS_LIMIT))
+                return current
             if prev == current:
                 return current
             prev = current
@@ -111,6 +112,11 @@ class CloseHoles(MorphologicalOperator):
         # Used as a marker
         inv = original.invert()
         border = original.border()
+        reconstruct = ReconstructionByDilation(
+            StructuralElement.predefined('circle'),
+            inv
+        )
+        return reconstruct(border).invert()
 
 
 class StructuralElement(object):
@@ -129,6 +135,12 @@ class StructuralElement(object):
                      [0, 1, 0],
                      [1, 0, 0],
                     ],
+        'circle': [[0, 1, 1, 1, 0],
+                   [1, 1, 1, 1, 1],
+                   [1, 1, 1, 1, 1],
+                   [1, 1, 1, 1, 1],
+                   [0, 1, 1, 1, 0],
+                  ],
     }
 
     def __init__(self, matrix_list, center=None):
