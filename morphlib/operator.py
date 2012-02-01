@@ -52,7 +52,11 @@ class StructuralElement(object):
     PREDEFINED = {
         'octagon': [[1, 1, 1],
                     [1, 1, 1],
+                    [1, 1, 1]],
+
+        'rhombus': [[0, 1, 0],
                     [1, 1, 1],
+                    [0, 1, 0]
                    ],
 
         'diagonal': [[0, 0, 1],

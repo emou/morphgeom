@@ -69,6 +69,7 @@ class OperatorObjectTest(unittest.TestCase):
     def test_erosion(self):
         """ TBD """
         from morphlib.operator import Erosion, StructuralElement
+
         erode = Erosion(StructuralElement.predefined('octagon'))
         original = ImageMock()
         # Set the highest value to the pixel in the top left corner
@@ -81,11 +82,12 @@ class OperatorObjectTest(unittest.TestCase):
         # (erosion takes the minimum)
         self.assertEquals(result[0][0], original[0][1])
         self.assertEquals(result[1][1], original[0][1])
+        
 
     def test_dilation(self):
         """ TBD """
         from morphlib.operator import Dilation, StructuralElement
-        dilate = Dilation(StructuralElement.predefined('octagon'))
+        dilate = Dilation(StructuralElement.predefined('rhombus'))
         original = ImageMock()
         # Set a high value to the second pixel to the right
         original[0][1] = 255
