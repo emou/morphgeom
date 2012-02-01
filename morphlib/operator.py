@@ -108,8 +108,9 @@ class CloseHoles(MorphologicalOperator):
     As defined in M.A. Luengo-Oroz et al. / Image and Vision Computing 28 (2009) 278-284.
     """
     def __call__(self, original):
-        original.invert()
-        pass
+        # Used as a marker
+        inv = original.invert()
+        border = original.border()
 
 
 class StructuralElement(object):

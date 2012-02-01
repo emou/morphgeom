@@ -89,6 +89,7 @@ class Main(object):
             self.images.append(('Original Image', self.original(self.image)))
             self.images.append(('Dilated Image', self.dilated(self.image)))
             #self.images.append(('Inverted Image', self.image_to_tk(self.image.invert())))
+            #self.images.append(('Border of Image', self.image_to_tk(self.image.border(pixels=10))))
         if self.mask_image:
             self.images.append(('Mask', self.mask(self.mask_image)))
         if self.image and self.mask_image:

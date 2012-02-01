@@ -93,6 +93,9 @@ class Image(object):
     def invert(self):
         raise NotImplementedError("Not implemented for RGB yet!")
 
+    def border(self, pixels=1):
+        raise NotImplementedError("Not implemented for RGB yet!")
+
     @property
     def size(self):
         """
@@ -148,6 +151,8 @@ class Image(object):
 
 
 class GrayscaleImage(Image):
+    # XXX: Should have an abstract class and not have Grayscale inherit Image
+    # (which is actually RGBImage)
     PIL_FORMAT='L'
     ROW_CLASS=GrayscaleRow
     mode='grayscale'
@@ -157,4 +162,20 @@ class GrayscaleImage(Image):
             width=self.width,
             height=self.height,
             data=[map(lambda px: 255-px, r) for r in self._data]
+        )
+
+    def border(self, pixels=1):
+        """
+        Return the border of the image, which is a new image with WHITE inside.
+        """
+        assert 0 < pixels < self.width, "Invalid border size"
+        assert 0 < pixels < self.height, "Invalid border size"
+
+        compute_border_row = lambda i, r: list(r) if i<pixels or i>self.height-pixels \
+                else [px if j<pixels or j>self.width-pixels else 255 for j, px in enumerate(r)]
+
+        return GrayscaleImage(
+            width=self.width,
+            height=self.height,
+            data=[compute_border_row(i, r) for i, r in enumerate(self._data)]
         )

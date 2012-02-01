@@ -98,3 +98,15 @@ class ImageObjectTest(unittest.TestCase):
         inv = i.invert()
         self.assertEquals(inv.size, i.size)
         self.assertEquals(inv[0][0] + i[0][0], 255)
+
+    def test_GrayscaleImage_border(self):
+        i = GrayscaleImage.load(filepath=self.TEST_IMAGE['path'])
+        b = i.border(pixels=2)
+        self.assertEquals(b[0][0], i[0][0])
+        self.assertEquals(b[0][1], i[0][1])
+        self.assertEquals(b[0][2], i[0][2])
+        self.assertEquals(b[1][0], i[1][0])
+        self.assertEquals(b[1][1], i[1][1])
+        self.assertEquals(b[3][3], 255)
+        self.assertNotEquals(b[2][2], i[2][2])
+        self.assertEquals(b[-1][-1], i[-1][-1])
