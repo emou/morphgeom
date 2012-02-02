@@ -17,6 +17,28 @@ class MorphologicalOperator(object):
     def compute_pixel(self, px, original):
         raise NotImplementedError()
 
+class ComposedMorphologicalOperator(object):
+
+    operationsList = []
+    
+    def __call__(self, original):
+        if original.mode != 'grayscale':
+            raise TypeError('%s only works on grayscale images' % self.__class__)
+        image = original.copy()
+        res = []
+        for operation in self.operationsList:
+            instance = operation(self.structuralElement)
+            print(self.structuralElement)
+            for i in xrange(image.height):
+                res.append(
+                    [instance.compute_pixel((i,j), image) for j in xrange(image.width)])
+            assert len(res)==image.height, 'Wrong height'
+            assert len(res[0])==image.width, 'Wrong width'
+            image = image.__class__(data = res, width=image.width, height=image.height)
+            res = []
+
+        return image
+
 
 class Erosion(MorphologicalOperator):
     """
@@ -123,6 +145,28 @@ class CloseHoles(MorphologicalOperator):
         )
         return reconstruct(border).invert()
 
+
+class Opening(ComposedMorphologicalOperator):
+    """
+    Opening operator. Basically, this is an erosion followed by a dilation
+    """
+
+    operationsList = [Erosion, Dilation]
+    
+    def __init__(self, structuralElement):
+        self.structuralElement = structuralElement 
+
+
+class Closing(ComposedMorphologicalOperator):
+    """
+    Opening operator. Basically, this is a dilation followed by an erosion
+    """
+
+    operationsList = [Dilation, Erosion]
+    
+    def __init__(self, structuralElement):
+        self.structuralElement = structuralElement
+        
 
 class StructuralElement(object):
     """
