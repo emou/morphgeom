@@ -28,7 +28,7 @@ class ComposedMorphologicalOperator(MorphologicalOperator):
         res = []
         for operation in self.operationsList:
             instance = operation(self.structuralElement)
-            print(self.structuralElement)
+            #print(self.structuralElement)
             for i in xrange(image.height):
                 res.append(
                     [instance.compute_pixel((i,j), image) for j in xrange(image.width)])
@@ -142,9 +142,50 @@ class OpeningByReconstruction(MorphologicalOperator):
 
 class AreaOpening(MorphologicalOperator):
     """
-    TBD
+    Area opening operator.
+    The same as standard morphological opening, but the connected components must have
+    area that is smaller than some initially defined value.
     """
-    pass
+
+    def __init__(self, structuralElement, area, diffThreshold):
+        self.structuralElement = structuralElement
+        self.area = area
+        self.diffThreshold = diffThreshold
+        
+    def __call__(self, original):
+        if original.mode != 'grayscale':
+            raise TypeError('%s only works on grayscale images' % self.__class__)
+        result = []
+        image = original.copy()
+        
+        opening = Opening(self.structuralElement)
+        openedImage = opening(image)
+
+        diffImage = self.__get_difference(image, openedImage)
+        return diffImage
+        
+
+        
+    def __get_difference(self, original, new):
+        assert original.height == new.height, 'The height of the original image does not correspong to the height of the new image'
+        assert original.width == new.width, 'The width of the original image does not correspong to the width of the new image'
+
+        result = []
+        
+        for row in xrange(original.height):
+            result.append(
+                map(self.__computeThreshold, [(abs(original[row][col] - new[row][col])) for col in xrange(original.width) ]))
+
+        assert len(result)==original.height, 'Wrong height'
+        assert len(result[0])==original.width, 'Wrong width'
+        return original.__class__(data=result, width=original.width, height=original.height)
+
+
+    def __computeThreshold(self, value):
+        if value > self.diffThreshold:
+            return value
+        else:
+            return 0
 
 
 class CloseHoles(MorphologicalOperator):
@@ -168,6 +209,8 @@ class Opening(ComposedMorphologicalOperator):
     Opening operator. Basically, this is an erosion followed by a dilation
     """
 
+    #The order of the classes mathers. For example [Erosion, Dilation] would give morphological opening
+    #but [Dilation, Erosion] would give morphological closing
     operationsList = [Erosion, Dilation]
     
     def __init__(self, structuralElement):
@@ -179,6 +222,8 @@ class Closing(ComposedMorphologicalOperator):
     Opening operator. Basically, this is a dilation followed by an erosion
     """
 
+    #The order of the classes mathers. For example [Erosion, Dilation] would give morphological opening
+    #but [Dilation, Erosion] would give morphological closing
     operationsList = [Dilation, Erosion]
     
     def __init__(self, structuralElement):
@@ -269,3 +314,38 @@ class StructuralElement(object):
     @property
     def width(self):
         return len(self.matrix[0])
+
+
+class SquaredStructuralElementBuilder(object):
+    """
+    Used to build squared structural elements of specific size
+    """
+    def __init__(self, size):
+        self.size = size
+
+    def get_struct_elem(self):
+        structElem = []
+        row = []
+        
+        for x in xrange(self.size):
+            row.append(1)
+        for y in xrange(self.size):
+            structElem.append(row)
+
+        return StructuralElement(structElem)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    

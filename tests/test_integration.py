@@ -6,11 +6,11 @@ import unittest
 from os.path import abspath, basename, dirname, exists, join
 
 from morphlib.image import GrayscaleImage
-from morphlib.operator import Erosion, Dilation, StructuralElement, Opening, Closing
+from morphlib.operator import Erosion, Dilation, StructuralElement, Opening, Closing, AreaOpening, SquaredStructuralElementBuilder
 
 class ImageObjectTest(unittest.TestCase):
     TEST_IMAGE={
-        'path': join(dirname(abspath(__file__)), 'images', 'orig.png'),
+        'path': join(dirname(abspath(__file__)), 'images', 'area-opening.png'),
         # Validated using an external program (gimp)
         'size': (100, 100),
         'topleftpixel': (255, 253, 244),
@@ -121,4 +121,31 @@ class ImageObjectTest(unittest.TestCase):
             except EnvironmentError:
                 pass
 
+    def test_area_opening_on_test_image(self):
+        name, ext = os.path.splitext(self.TEST_IMAGE['path'])
+        try:
+            os.mkdir(self.TEST_OUT)
+        except OSError:
+            # Hope it just already exists
+            pass
+        test_out = join(self.TEST_OUT,
+                        '%s%s%s' % (basename(name), '_CLOSING_test', ext))
+        test_intermediate = join(self.TEST_OUT,
+                                 '%s%s%s' % (basename(name), '_area_opening', ext))
+        try:
+            self.i.save(test_intermediate)
+
+            structElemBuilder = SquaredStructuralElementBuilder(23)
+            structElem = structElemBuilder.get_struct_elem()
+            
+            areaOpening = AreaOpening(structElem, 529, 50)
+            i = areaOpening(self.i)
+            i.save(test_out)
+        finally:
+            try:
+                pass
+                #os.unlink(test_out)
+                #os.unlink(test_intermidiate)
+            except EnvironmentError:
+                pass
     
