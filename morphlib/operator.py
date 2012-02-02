@@ -17,7 +17,7 @@ class MorphologicalOperator(object):
     def compute_pixel(self, px, original):
         raise NotImplementedError()
 
-class ComposedMorphologicalOperator(object):
+class ComposedMorphologicalOperator(MorphologicalOperator):
 
     operationsList = []
     
@@ -114,6 +114,7 @@ class ReconstructionByDilation(GeodesicDilation):
                     result[i][j] = GeodesicDilation.compute_pixel(self, (i,j), result)
                     if old != result[i][j]:
                         changed = True
+        return 'joo'
 
 
 class OpeningByReconstruction(MorphologicalOperator):
