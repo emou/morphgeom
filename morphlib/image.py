@@ -26,7 +26,7 @@ class ImageRow(object):
 
 class GrayscaleRow(ImageRow):
     def check_item(self, x):
-        if not isinstance(x, int) or not 0 <= x <=255:
+        if not isinstance(x, int) or not 0 <= x <= 255:
             raise TypeError('Invalid grayscale pixel value: %r' % x)
         return x
 
