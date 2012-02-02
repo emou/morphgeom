@@ -125,8 +125,10 @@ class ReconstructionByDilation(GeodesicDilation):
     def compute_pixel(self, px, image, order_name):
         offsets = self.structuralElement.offsets[order_name]
         pi, pj = px
-        region = ((pi+i, pj+j) for i,j in offsets \
+        region = chain((pi+i, pj+j) for i,j in offsets \
                   if pi+i<image.height and pj+j<image.width)
+        if not region:
+            return 0
         return min(max(image[i][j] for i,j in region), self.mask[pi][pj])
 
 
@@ -210,20 +212,6 @@ class StructuralElement(object):
                   ],
     }
 
-    FULL_OFFSETS = {
-        'raster': frozenset([(0, 0),
-                             (0, 1),
-                             (1, -1),
-                             (1, 0),
-                             (1, 1)]),
-
-        'antiraster': frozenset([(0, 0),
-                                 (0, -1),
-                                 (-1, -1),
-                                 (-1, 0),
-                                 (-1, 1)]),
-    }
-
     def __init__(self, matrix_list, center=None):
         if not all(x in [0, 1] for row in matrix_list for x in row):
             raise TypeError("Structured element should be initialized with a matrix "
@@ -241,8 +229,10 @@ class StructuralElement(object):
                                 for j in xrange(self.width) \
                                 if self.get(i, j))
         self.offsets = {
-            'raster': self.FULL_OFFSETS['raster'] & self.ones_offsets,
-            'antiraster': self.FULL_OFFSETS['raster'] & self.ones_offsets,
+            'raster':     frozenset(
+                (i,j) for i,j in self.ones_offsets if i>=0 or j>=0),
+            'antiraster': frozenset(
+                (i,j) for i,j in self.ones_offsets if i<=0 or j<=0),
         }
 
     @classmethod
