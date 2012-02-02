@@ -6,7 +6,7 @@ import unittest
 from os.path import abspath, basename, dirname, exists, join
 
 from morphlib.image import GrayscaleImage
-from morphlib.operator import Erosion, Dilation, StructuralElement
+from morphlib.operator import Erosion, Dilation, StructuralElement, Opening, Closing
 
 class ImageObjectTest(unittest.TestCase):
     TEST_IMAGE={
@@ -71,3 +71,54 @@ class ImageObjectTest(unittest.TestCase):
                 #os.unlink(test_intermidiate)
             except EnvironmentError:
                 pass
+
+
+    def test_opening_on_test_image(self):
+        name, ext = os.path.splitext(self.TEST_IMAGE['path'])
+        try:
+            os.mkdir(self.TEST_OUT)
+        except OSError:
+            # Hope it just already exists
+            pass
+        test_out = join(self.TEST_OUT,
+                        '%s%s%s' % (basename(name), '_OPENING_test', ext))
+        test_intermediate = join(self.TEST_OUT,
+                                 '%s%s%s' % (basename(name), '_grayscale', ext))
+        try:
+            self.i.save(test_intermediate)
+            opening = Opening(StructuralElement.predefined('rhombus'))
+            i = opening(self.i)
+            i.save(test_out)
+        finally:
+            try:
+                pass
+                #os.unlink(test_out)
+                #os.unlink(test_intermidiate)
+            except EnvironmentError:
+                pass
+
+    def test_closing_on_test_image(self):
+        name, ext = os.path.splitext(self.TEST_IMAGE['path'])
+        try:
+            os.mkdir(self.TEST_OUT)
+        except OSError:
+            # Hope it just already exists
+            pass
+        test_out = join(self.TEST_OUT,
+                        '%s%s%s' % (basename(name), '_CLOSING_test', ext))
+        test_intermediate = join(self.TEST_OUT,
+                                 '%s%s%s' % (basename(name), '_grayscale', ext))
+        try:
+            self.i.save(test_intermediate)
+            closing = Closing(StructuralElement.predefined('rhombus'))
+            i = closing(self.i)
+            i.save(test_out)
+        finally:
+            try:
+                pass
+                #os.unlink(test_out)
+                #os.unlink(test_intermidiate)
+            except EnvironmentError:
+                pass
+
+    
