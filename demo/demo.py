@@ -11,7 +11,7 @@ import PIL
 sys.path.append(os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)))
 from morphlib.image import GrayscaleImage
-from morphlib.operator import Dilation, ReconstructionByDilation, CloseHoles, StructuralElement
+from morphlib.operator import Dilation, CloseHoles, Closing, Opening, ReconstructionByDilation, StructuralElement
 
 class Main(object):
     def initialize(self):
@@ -78,6 +78,14 @@ class Main(object):
         dilate = Dilation(StructuralElement.predefined('rhombus'))
         return self.image_to_tk(dilate(i))
 
+    def opening(self, i):
+        opening = Opening(StructuralElement.predefined('rhombus'))
+        return self.image_to_tk(opening(i))
+
+    def closing(self, i):
+        closing = Closing(StructuralElement.predefined('rhombus'))
+        return self.image_to_tk(closing(i))
+
     def reconstruct_by_dilation(self, i, mask):
         dilate = ReconstructionByDilation(StructuralElement.predefined('rhombus'),
                                           mask=mask)
@@ -92,6 +100,8 @@ class Main(object):
         if self.image:
             self.images.append(('Original Image', self.original(self.image)))
             self.images.append(('Dilated Image', self.dilated(self.image)))
+            self.images.append(('Opening', self.opening(self.image)))
+            self.images.append(('Closing', self.closing(self.image)))
             self.images.append(('Close holes', self.close_holes(self.image)))
             #self.images.append(('Inverted Image', self.image_to_tk(self.image.invert())))
             #self.images.append(('Border of Image', self.image_to_tk(self.image.border(pixels=10))))
@@ -104,9 +114,9 @@ class Main(object):
         i = 0
         for txt, img in self.images:
             image_label = Tkinter.Label(self.root, image=img)
-            image_label.grid(row=i, column=0)
+            image_label.grid(row=i % 3, column=(i / 3) * 2)
             text_label = Tkinter.Label(self.root, text=txt)
-            text_label.grid(row=i, column=1)
+            text_label.grid(row=i % 3, column=(i / 3) * 2 + 1)
             i+=1
 
     def __call__(self, args):
