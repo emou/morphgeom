@@ -10,7 +10,7 @@ from morphlib.operator import Erosion, Dilation, StructuralElement, Opening, Clo
 
 class ImageObjectTest(unittest.TestCase):
     TEST_IMAGE={
-        'path': join(dirname(abspath(__file__)), 'images', 'pict.png'),
+        'path': join(dirname(abspath(__file__)), 'images', 'orig.png'),
         # Validated using an external program (gimp)
         'size': (100, 100),
         'topleftpixel': (255, 253, 244),
@@ -86,7 +86,7 @@ class ImageObjectTest(unittest.TestCase):
                                  '%s%s%s' % (basename(name), '_grayscale', ext))
         try:
             self.i.save(test_intermediate)
-            opening = Opening(StructuralElement.predefined('rhombus'))
+            opening = Opening(StructuralElement.predefined('circle'))
             i = opening(self.i)
             i.save(test_out)
         finally:
