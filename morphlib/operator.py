@@ -125,7 +125,7 @@ class ReconstructionByDilation(GeodesicDilation):
     def compute_pixel(self, px, image, order_name):
         offsets = self.structuralElement.offsets[order_name]
         pi, pj = px
-        region = chain((pi+i, pj+j) for i,j in offsets \
+        region = ((pi+i, pj+j) for i,j in offsets \
                   if pi+i<image.height and pj+j<image.width)
         if not region:
             return 0
