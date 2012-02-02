@@ -230,9 +230,9 @@ class StructuralElement(object):
                                 if self.get(i, j))
         self.offsets = {
             'raster':     frozenset(
-                (i,j) for i,j in self.ones_offsets if i>=0 or j>=0),
+                (i,j) for i,j in self.ones_offsets if i<0 or (i==0 and j<=0)),
             'antiraster': frozenset(
-                (i,j) for i,j in self.ones_offsets if i<=0 or j<=0),
+                (i,j) for i,j in self.ones_offsets if i>0 or (i==0 and j>=0)),
         }
 
     @classmethod
