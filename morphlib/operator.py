@@ -97,23 +97,37 @@ class ReconstructionByDilation(GeodesicDilation):
     ITERATIONS_LIMIT = 100
 
     def __call__(self, original):
-        i = 0
+        it = 0
         result = original.copy()
 
         changed = True
-        while True:
-            if not changed:
-                return result
+        while changed:
+            if it == self.ITERATIONS_LIMIT:
+                print '%s: hit iteration limit (%d)' % (self.__class__, it)
+                break
+            it += 1
             changed = False
-            i += 1
-            if i > self.ITERATIONS_LIMIT:
-                return result
-            for i in xrange(result.height):
-                for j in xrange(result.width):
-                    old = result[i][j]
-                    result[i][j] = GeodesicDilation.compute_pixel(self, (i,j), result)
-                    if old != result[i][j]:
-                        changed = True
+            for order_name, order in (('raster', lambda x: x),
+                                      ('antiraster', reversed)):
+                for i in order(xrange(result.height)):
+                    for j in order(xrange(result.width)):
+                        old = result[i][j]
+                        result[i][j] = self.compute_pixel(
+                            (i,j), result, order_name)
+                        if old != result[i][j]:
+                            changed = True
+
+        if not changed:
+            print '%s: Stability reached.' % self.__class__
+        print '%s: took %s iterations.' % (self.__class__, it)
+        return result
+
+    def compute_pixel(self, px, image, order_name):
+        offsets = self.structuralElement.offsets[order_name]
+        pi, pj = px
+        region = ((pi+i, pj+j) for i,j in offsets \
+                  if pi+i<image.height and pj+j<image.width)
+        return min(max(image[i][j] for i,j in region), self.mask[pi][pj])
 
 
 class OpeningByReconstruction(MorphologicalOperator):
@@ -196,6 +210,20 @@ class StructuralElement(object):
                   ],
     }
 
+    FULL_OFFSETS = {
+        'raster': frozenset([(0, 0),
+                             (0, 1),
+                             (1, -1),
+                             (1, 0),
+                             (1, 1)]),
+
+        'antiraster': frozenset([(0, 0),
+                                 (0, -1),
+                                 (-1, -1),
+                                 (-1, 0),
+                                 (-1, 1)]),
+    }
+
     def __init__(self, matrix_list, center=None):
         if not all(x in [0, 1] for row in matrix_list for x in row):
             raise TypeError("Structured element should be initialized with a matrix "
@@ -208,6 +236,14 @@ class StructuralElement(object):
             self.center = (len(self.matrix) / 2, len(self.matrix[0]) / 2)
         else:
             self.center = center
+        ci, cj = self.center
+        self.ones_offsets = set((i - ci, j - cj) for i in xrange(self.height) \
+                                for j in xrange(self.width) \
+                                if self.get(i, j))
+        self.offsets = {
+            'raster': self.FULL_OFFSETS['raster'] & self.ones_offsets,
+            'antiraster': self.FULL_OFFSETS['raster'] & self.ones_offsets,
+        }
 
     @classmethod
     def predefined(cls, key):
@@ -234,3 +270,11 @@ class StructuralElement(object):
                     # In bounds and covered by structural element.
                     res.append((ni, nj))
         return res
+
+    @property
+    def height(self):
+        return len(self.matrix)
+
+    @property
+    def width(self):
+        return len(self.matrix[0])
