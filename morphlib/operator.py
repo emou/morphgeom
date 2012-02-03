@@ -6,13 +6,11 @@ class MorphologicalOperator(object):
     def __call__(self, image):
         if image.mode != 'grayscale':
             raise TypeError('%s only works on grayscale images' % self.__class__)
-        res = []
+        res = image.copy()
         for i in xrange(image.height):
-            res.append(
-                [self.compute_pixel((i,j), image) for j in xrange(image.width)])
-        assert len(res)==image.height, 'Wrong height'
-        assert len(res[0])==image.width, 'Wrong width'
-        return image.__class__(data=res, width=image.width, height=image.height)
+            for j in xrange(image.width):
+                res[i][j] = self.compute_pixel((i,j), image)
+        return res
 
     def compute_pixel(self, px, original):
         raise NotImplementedError()
