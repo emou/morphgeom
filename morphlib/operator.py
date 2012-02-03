@@ -4,38 +4,41 @@ A module containing morphological operators.
 
 class MorphologicalOperator(object):
     def __call__(self, image):
-        if image.mode != 'grayscale':
-            raise TypeError('%s only works on grayscale images' % self.__class__)
         res = image.copy()
+        self._check_image(image)
+        return self.apply(image, res)
+
+    def compute_pixel(self, px, original):
+        raise NotImplementedError()
+
+    def apply(self, image, res):
+        """
+        Applies operator to `image` saving the result in `res`.
+        """
         for i in xrange(image.height):
             for j in xrange(image.width):
                 res[i][j] = self.compute_pixel((i,j), image)
         return res
 
-    def compute_pixel(self, px, original):
-        raise NotImplementedError()
+    def _check_image(self, image):
+        if image.mode != 'grayscale':
+            raise TypeError('%s only works on grayscale images' % self.__class__)
 
 class ComposedMorphologicalOperator(MorphologicalOperator):
 
     operationsList = []
-    
-    def __call__(self, original):
-        if original.mode != 'grayscale':
-            raise TypeError('%s only works on grayscale images' % self.__class__)
-        image = original.copy()
-        res = []
-        for operation in self.operationsList:
-            instance = operation(self.structuralElement)
-            #print(self.structuralElement)
-            for i in xrange(image.height):
-                res.append(
-                    [instance.compute_pixel((i,j), image) for j in xrange(image.width)])
-            assert len(res)==image.height, 'Wrong height'
-            assert len(res[0])==image.width, 'Wrong width'
-            image = image.__class__(data = res, width=image.width, height=image.height)
-            res = []
 
-        return image
+    def __call__(self, original):
+        self._check_image(original)
+        res = original.copy()
+        self.apply(original, res)
+        return res
+
+    def apply(self, original, res):
+        for operation in self.operationsList:
+            op = operation(self.structuralElement)
+            op.apply(original, res)
+        return res
 
 
 class Erosion(MorphologicalOperator):
@@ -46,7 +49,6 @@ class Erosion(MorphologicalOperator):
         self.structuralElement = structuralElement
 
     def compute_pixel(self, px, original):
-        i, j = px
         neighbourhood = self.structuralElement.get_neighbourhood(original, px)
         return min(original[p][q] for p,q in neighbourhood)
 
@@ -59,7 +61,6 @@ class Dilation(MorphologicalOperator):
         self.structuralElement = structuralElement
 
     def compute_pixel(self, px, original):
-        i, j = px
         neighbourhood = self.structuralElement.get_neighbourhood(original, px)
         return max(original[p][q] for p,q in neighbourhood)
 
@@ -151,49 +152,34 @@ class AreaOpening(MorphologicalOperator):
         self.diffThreshold = diffThreshold
         
     def __call__(self, original):
-        if original.mode != 'grayscale':
-            raise TypeError('%s only works on grayscale images' % self.__class__)
-        result = []
+        self._check_image(original)
         image = original.copy()
-        
+
         opening = Opening(self.structuralElement)
-        openedImage = opening(image)
+        opening.apply(original, image)
+        self.__get_difference(original, image)
+        return image
 
-        diffImage = self.__get_difference(image, openedImage)
-        
-        return diffImage
-        
-
-        
     def __get_difference(self, original, new):
-        assert original.height == new.height, 'The height of the original image does not correspong to the height of the new image'
-        assert original.width == new.width, 'The width of the original image does not correspong to the width of the new image'
-
-        print 'Original image height: %d, width: %d' % (original.height, original.width)
-
-        result = []
-        
-        #for row in xrange(original.height):
-        #    result.append(
-        #        map(self.__computeThreshold, [(abs(original[row][col] - new[row][col])) for col in xrange(original.width) ]))
+        """
+        Compute the difference in-place into `new`
+        """
+        assert original.height == new.height, \
+                'The height of the original image does not correspong' + \
+                ' to the height of the new image'
+        assert original.width == new.width, \
+                'The width of the original image does not correspong' + \
+                ' to the width of the new image'
 
         for i in xrange(original.height):
-            row = []
             for j in xrange(original.width):
                 diff = abs(original[i][j] - new[i][j])
                 
                 if diff > self.diffThreshold:
-                    row.append(diff)
-                    #print (diff)
+                    new[i][j] = diff
                 else:
-                    row.append(0)
-            result.append(row)
-
-        assert len(result)==original.height, 'Wrong height'
-        assert len(result[0])==original.width, 'Wrong width'
-        
-        return original.__class__(data=result, width=original.width, height=original.height)
-
+                    new[i][j] = 0
+        return new
 
     def __computeThreshold(self, value):
         if value > self.diffThreshold:
@@ -226,7 +212,7 @@ class Opening(ComposedMorphologicalOperator):
     #The order of the classes mathers. For example [Erosion, Dilation] would give morphological opening
     #but [Dilation, Erosion] would give morphological closing
     operationsList = [Erosion, Dilation]
-    
+
     def __init__(self, structuralElement):
         self.structuralElement = structuralElement 
 
@@ -239,10 +225,10 @@ class Closing(ComposedMorphologicalOperator):
     #The order of the classes mathers. For example [Erosion, Dilation] would give morphological opening
     #but [Dilation, Erosion] would give morphological closing
     operationsList = [Dilation, Erosion]
-    
+
     def __init__(self, structuralElement):
         self.structuralElement = structuralElement
-        
+
 
 class StructuralElement(object):
     """
@@ -347,19 +333,3 @@ class SquaredStructuralElementBuilder(object):
             structElem.append(row)
 
         return StructuralElement(structElem)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
