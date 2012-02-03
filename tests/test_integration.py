@@ -129,7 +129,7 @@ class ImageObjectTest(unittest.TestCase):
             # Hope it just already exists
             pass
         test_out = join(self.TEST_OUT,
-                        '%s%s%s' % (basename(name), '_CLOSING_test', ext))
+                        '%s%s%s' % (basename(name), '_AREA_OPENING', ext))
         test_intermediate = join(self.TEST_OUT,
                                  '%s%s%s' % (basename(name), '_area_opening', ext))
         try:
@@ -138,7 +138,7 @@ class ImageObjectTest(unittest.TestCase):
             structElemBuilder = SquaredStructuralElementBuilder(23)
             structElem = structElemBuilder.get_struct_elem()
             
-            areaOpening = AreaOpening(structElem, 529, 50)
+            areaOpening = AreaOpening(structElem, 529, 100)
             i = areaOpening(self.i)
             i.save(test_out)
         finally:

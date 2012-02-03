@@ -162,6 +162,7 @@ class AreaOpening(MorphologicalOperator):
         openedImage = opening(image)
 
         diffImage = self.__get_difference(image, openedImage)
+        
         return diffImage
         
 
@@ -170,14 +171,29 @@ class AreaOpening(MorphologicalOperator):
         assert original.height == new.height, 'The height of the original image does not correspong to the height of the new image'
         assert original.width == new.width, 'The width of the original image does not correspong to the width of the new image'
 
+        print 'Original image height: %d, width: %d' % (original.height, original.width)
+
         result = []
         
-        for row in xrange(original.height):
-            result.append(
-                map(self.__computeThreshold, [(abs(original[row][col] - new[row][col])) for col in xrange(original.width) ]))
+        #for row in xrange(original.height):
+        #    result.append(
+        #        map(self.__computeThreshold, [(abs(original[row][col] - new[row][col])) for col in xrange(original.width) ]))
+
+        for i in xrange(original.height):
+            row = []
+            for j in xrange(original.width):
+                diff = abs(original[i][j] - new[i][j])
+                
+                if diff > self.diffThreshold:
+                    row.append(diff)
+                    #print (diff)
+                else:
+                    row.append(0)
+            result.append(row)
 
         assert len(result)==original.height, 'Wrong height'
         assert len(result[0])==original.width, 'Wrong width'
+        
         return original.__class__(data=result, width=original.width, height=original.height)
 
 
