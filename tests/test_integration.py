@@ -10,7 +10,7 @@ from morphlib.operator import Erosion, Dilation, StructuralElement, Opening, Clo
 
 class ImageObjectTest(unittest.TestCase):
     TEST_IMAGE={
-        'path': join(dirname(abspath(__file__)), 'images', 'area-opening.png'),
+        'path': join(dirname(abspath(__file__)), 'images', 'orig.png'),
         # Validated using an external program (gimp)
         'size': (100, 100),
         'topleftpixel': (255, 253, 244),
@@ -37,7 +37,7 @@ class ImageObjectTest(unittest.TestCase):
                                  '%s%s%s' % (basename(name), '_grayscale2', ext))
         try:
             self.i.save(test_intermediate)
-            erode = Erosion(StructuralElement.predefined('octagon'))
+            erode = Erosion(StructuralElement.predefined('diagonal5'))
             i = erode(self.i)
             i.save(test_out)
         finally:
@@ -135,10 +135,10 @@ class ImageObjectTest(unittest.TestCase):
         try:
             self.i.save(test_intermediate)
 
-            structElemBuilder = SquaredStructuralElementBuilder(23)
+            structElemBuilder = SquaredStructuralElementBuilder(15)
             structElem = structElemBuilder.get_struct_elem()
             
-            areaOpening = AreaOpening(structElem, 529, 100)
+            areaOpening = AreaOpening(StructuralElement.predefined('diagonal5'), 529, 109)
             i = areaOpening(self.i)
             i.save(test_out)
         finally:
